@@ -1088,6 +1088,7 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 		}
 		# First check if we already have a valid domain set
 //		if ( isset( $_SESSION['wsDomain'] ) && $_SESSION['wsDomain'] != 'invaliddomain' ) {
+        throw new Exception('test');
         $wsDomain = $this->session->get('wsDomain');
         if ( $wsDomain !== null && $wsDomain != 'invaliddomain' ) {
 			$this->printDebug( "Pulling domain from session.", NONSENSITIVE );
