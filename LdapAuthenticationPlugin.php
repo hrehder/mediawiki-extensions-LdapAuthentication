@@ -246,12 +246,6 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 		return $ret;
 	}
 
-	public function __construct()
-    {
-        parent::__construct();
-        $this->session = \MediaWiki\Session\SessionManager::getGlobalSession();
-    }
-
     /**
 	 * Get configuration defined by admin, or return default value
 	 *
@@ -2013,5 +2007,23 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 		}
 		return false;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getSession()
+    {
+        return $this->session;
+    }
+
+    /**
+     * @param mixed $session
+     */
+    public function setSession($session)
+    {
+        $this->session = $session;
+    }
+
+
 
 }

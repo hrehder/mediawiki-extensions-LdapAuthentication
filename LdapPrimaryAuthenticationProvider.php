@@ -201,7 +201,9 @@ class LdapPrimaryAuthenticationProvider
 		}
 		$ldap->setDomain( $domain );
 
-		if ( $this->testUserCanAuthenticateInternal( $ldap, User::newFromName( $username ) ) &&
+		$user = User::newFromName( $username );
+		$ldap->setSession($user->getRequest()->getSession());
+		if ( $this->testUserCanAuthenticateInternal( $ldap, $user ) &&
 			$ldap->authenticate( $username, $req->password )
 		) {
 			return AuthenticationResponse::newPass( $username );
