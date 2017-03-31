@@ -184,11 +184,13 @@ class LdapPrimaryAuthenticationProvider
 		}
 
 		$username = User::getCanonicalName( $req->username, 'usable' );
+        $user = User::newFromName( $username );
 		if ( $username === false ) {
 			return AuthenticationResponse::newAbstain();
 		}
 
 		$ldap = LdapAuthenticationPlugin::getInstance();
+        $ldap->setSession($user->getRequest()->getSession());
 
 		if ( $this->hasMultipleDomains ) {
 			// Special:UserLogin does this. Strange.
