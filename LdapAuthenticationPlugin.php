@@ -48,6 +48,8 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 	// the user we are currently bound as
 	public $boundAs;
 
+	private $session;
+
 	/**
 	 * Fetch the singleton instance of LdapAuthenticationPlugin
 	 * @return LdapAuthenticationPlugin
@@ -244,7 +246,13 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 		return $ret;
 	}
 
-	/**
+	public function __construct()
+    {
+        parent::__construct();
+        $this->session = \MediaWiki\Session\SessionManager::getGlobalSession();
+    }
+
+    /**
 	 * Get configuration defined by admin, or return default value
 	 *
 	 * @param string $preference
@@ -1061,7 +1069,8 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 	 */
 	public function setDomain( $domain ) {
 		$this->printDebug( "Setting domain as: $domain", NONSENSITIVE );
-		$_SESSION['wsDomain'] = $domain;
+		$this->session->set('wsDomain',$domain);
+		#$_SESSION['wsDomain'] = $domain;
 	}
 
 	/**
@@ -1084,9 +1093,11 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 			return $domainNames[0];
 		}
 		# First check if we already have a valid domain set
-		if ( isset( $_SESSION['wsDomain'] ) && $_SESSION['wsDomain'] != 'invaliddomain' ) {
+//		if ( isset( $_SESSION['wsDomain'] ) && $_SESSION['wsDomain'] != 'invaliddomain' ) {
+        $wsDomain = $this->session->get('wsDomain');
+        if ( $wsDomain !== null && $wsDomain != 'invaliddomain' ) {
 			$this->printDebug( "Pulling domain from session.", NONSENSITIVE );
-			return $_SESSION['wsDomain'];
+			return $wsDomain;
 		}
 		# If the session domain isn't set, the user may have been logged
 		# in with a token, check the user options.
@@ -1162,7 +1173,7 @@ class LdapAuthenticationPlugin extends AuthPlugin {
 		# We must set a user option if we want token based logins to work
 		if ( $user->getToken( false ) ) {
 			$this->printDebug( "User has a token, setting domain in user options.", NONSENSITIVE );
-			self::saveDomain( $user, $_SESSION['wsDomain'] );
+			self::saveDomain( $user, $this->session->get('wsDomain') );
 		}
 
 		# Let other extensions update the user
